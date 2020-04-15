@@ -5,13 +5,315 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+
     <title><%= htmlWebpackPlugin.options.title %></title>
   </head>
   <body>
+
+    <!-- <div style="border: 1px solid black; width: 100px; height: 100px;">
+      <p id="homo" style="text-align: center;"></p>
+
+    </div>
+    <p>Number of toilet paper rolls Billy has</p>
+    <div style="border: 1px solid black; width: 100px; height: 100px;">
+      <p id="sapien" style="text-align: center;"></p>
+
+    </div>
+    <p>Number of houses Johnny has</p>
+    <div style="border: 1px solid black; width: 100px; height: 100px;">
+      <p id="is" style="text-align: center;"></p>
+
+    </div>
+    <p>OMG Xavi has that many pimples!</p>
+    <div style="border: 1px solid black; width: 100px; height: 100px;">
+      <p id="not" style="text-align: center;"></p>
+
+    </div>
+    <p>Number of sunglasses Eric wishes he had</p> -->
+
     <noscript>
       <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
-    <div id="app"></div>
+    <input id="fileChooser" accept="xml" type="file">
+
+  <!--   <div id="app"></div> -->
+
     <!-- built files will be auto injected -->
+    <canvas id="canvas" width=500 height=500 style="background-color: transparent;">
+</canvas>
+<p></p>
+<a id="download" download="myImage.jpg" href="" onclick="download_img(this);">Download to myImage.jpg</a>
+
   </body>
+  <script type="text/javascript">
+
+  var fileChooser = document.getElementById('fileChooser');
+
+function parseTextAsXml(text) {
+  var parser = new DOMParser(),
+      xmlDom = parser.parseFromString(text, "text/xml");
+      //console.log(xmlDom);
+      var json = xmlToJson(xmlDom)
+      filterJson(json)
+      filterJson1(json)
+
+  //now, extract items from xmlDom and assign to appropriate text input fields
+}
+function filterJson(json){
+  var json1 = json.SDDXML.Model[3];
+
+  //console.log(json1);
+  var result = function () {
+    var result = [];
+
+    (function traverse(json1) {
+      if (Array.isArray(json1)) {
+        json1.forEach(traverse);
+      } else if (typeof json1 === 'object') {
+        Object.keys(json1).forEach(function(key) {
+
+            if (key === 'SummaryColNoPVDR') {
+              result.push(json1[key]);
+            }
+
+
+           else {
+            traverse(json1[key]);
+          }
+        });
+      }
+    }(json1));
+    return result;
+  }();
+  //console.log(result)
+
+  var container = []
+  var unique = [... new Set(result)]
+  for (var i = 0; i < unique.length; i++) {
+    var hello = unique[i]
+    for (var j = 0; j < hello.length; j++) {
+      container.push(hello[j])
+    }
+  }
+  //console.log(container);
+  var uniqueContainer = [... new Set(container)]
+  console.log(uniqueContainer[2]);
+  console.log(uniqueContainer[3]);
+  // var bla = document.getElementById(sapien);
+  // bla.innerHTML = toString(uniqueContainer[3])
+  ////console.log(unique);
+  DrawText(uniqueContainer[2])
+  DrawText1(uniqueContainer[3])
+}
+function filterJson1(json){
+  var json1 = json.SDDXML.Model[3];
+
+  ////console.log(json1);
+  var result = function () {
+    var result = [];
+
+    (function traverse(json1) {
+      if (Array.isArray(json1)) {
+        json1.forEach(traverse);
+      } else if (typeof json1 === 'object') {
+        Object.keys(json1).forEach(function(key) {
+
+            if (key === 'SummaryColPVOnlyDR') {
+              result.push(json1[key]);
+            }
+
+
+           else {
+            traverse(json1[key]);
+          }
+        });
+      }
+    }(json1));
+    return result;
+  }();
+  ////console.log(result)
+
+  var container = []
+  var unique = [... new Set(result)]
+  for (var i = 0; i < unique.length; i++) {
+    var hello = unique[i]
+    for (var j = 0; j < hello.length; j++) {
+      container.push(hello[j])
+    }
+  }
+  //console.log(container);
+  var uniqueContainer = [... new Set(container)]
+  console.log(uniqueContainer[2]);
+  console.log(uniqueContainer[3]);
+  //console.log(uniqueContainer);
+
+
+  DrawText2(uniqueContainer[2])
+  DrawText3(uniqueContainer[3])
+}
+function waitForTextReadComplete(reader) {
+  reader.onloadend = function(event) {
+      var text = event.target.result;
+
+      parseTextAsXml(text);
+  }
+}
+
+function handleFileSelection() {
+  var file = fileChooser.files[0],
+      reader = new FileReader();
+
+  waitForTextReadComplete(reader);
+  reader.readAsText(file);
+}
+function xmlToJson(xml) {
+  // Create the return object
+  var obj = {};
+
+  if (xml.nodeType == 1) {
+    // element
+    // do attributes
+    if (xml.attributes.length > 0) {
+      obj["@attributes"] = {};
+      for (var j = 0; j < xml.attributes.length; j++) {
+        var attribute = xml.attributes.item(j);
+        obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
+      }
+    }
+  } else if (xml.nodeType == 3) {
+    // text
+    obj = xml.nodeValue;
+  }
+
+  // do children
+  // If all text nodes inside, get concatenated text from them.
+  var textNodes = [].slice.call(xml.childNodes).filter(function(node) {
+    return node.nodeType === 3;
+  });
+  if (xml.hasChildNodes() && xml.childNodes.length === textNodes.length) {
+    obj = [].slice.call(xml.childNodes).reduce(function(text, node) {
+      return text + node.nodeValue;
+    }, "");
+  } else if (xml.hasChildNodes()) {
+    for (var i = 0; i < xml.childNodes.length; i++) {
+      var item = xml.childNodes.item(i);
+      var nodeName = item.nodeName;
+      if (typeof obj[nodeName] == "undefined") {
+        obj[nodeName] = xmlToJson(item);
+      } else {
+        if (typeof obj[nodeName].push == "undefined") {
+          var old = obj[nodeName];
+          obj[nodeName] = [];
+          obj[nodeName].push(old);
+        }
+        obj[nodeName].push(xmlToJson(item));
+      }
+    }
+  }
+  return obj;
+}
+
+fileChooser.addEventListener('change', handleFileSelection, false);
+
+
+
+var text_title ="Overlay text";
+
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+var img = new Image();
+img.crossOrigin="anonymous";
+
+window.addEventListener('load', DrawPlaceholder)
+
+function DrawPlaceholder() {
+    img.onload = function() {
+        DrawOverlay(img);
+        DrawText();
+
+    };
+    img.src = 'https://www.resnet.us/wp-content/uploads/HERS_Index_Scale.jpg';
+
+}
+function DrawOverlay(img) {
+    ctx.drawImage(img,50,0);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+function DrawText(number) {
+    ctx.fillStyle = "black";
+    ctx.textBaseline = 'middle';
+    ctx.font = "12px 'Montserrat'";
+    // ctx.beginPath();
+    // canvas_arrow(ctx, 10, 30, 200, 150);
+    // ctx.stroke();
+    // 18 per level
+    var x = number
+    var calculator = -1.8 * x;
+    var calculator = calculator + 325;
+    ctx.fillText(number, 200, calculator);
+}
+function DrawText1(number) {
+    ctx.fillStyle = "black";
+    ctx.textBaseline = 'middle';
+    ctx.font = "12px 'Montserrat'";
+    // 18 per level
+    var x = number
+    var calculator = -1.8 * x;
+    var calculator = calculator + 325;
+    ctx.fillText(number, 200, calculator);
+}
+function DrawText2(number) {
+    ctx.fillStyle = "black";
+    ctx.textBaseline = 'middle';
+    ctx.font = "12px 'Montserrat'";
+    // 18 per level
+    var x = number
+    var calculator = -1.8 * x;
+    var calculator = calculator + 325;
+    ctx.fillText(number, 200, calculator);
+}
+function DrawText3(number) {
+    ctx.fillStyle = "black";
+    ctx.textBaseline = 'middle';
+    ctx.font = "12px 'Montserrat'";
+    // 18 per level
+    var x = number
+    var calculator = -1.8 * x;
+    var calculator = calculator + 325;
+    ctx.fillText(number, 200, calculator);
+}
+
+
+/*
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+var ox = canvas.width / 2;
+var oy = canvas.height / 2;
+    var imageObj = new Image();
+    imageObj.src= 'https://www.resnet.us/wp-content/uploads/HERS_Index_Scale.jpg';
+        ctx.drawImage(imageObj, 10, 10);
+ctx.font = "42px serif";
+
+ctx.textAlign = "center";
+ctx.textBaseline = "middle";
+ctx.fillStyle = "#800";
+ctx.fillRect(ox / 2, oy / 2, ox, oy); */
+
+download_img = function(el) {
+  var image = canvas.toDataURL("image/jpg");
+  el.href = image;
+};
+function canvas_arrow(context, fromx, fromy, tox, toy) {
+  var headlen = 10; // length of head in pixels
+  var dx = tox - fromx;
+  var dy = toy - fromy;
+  var angle = Math.atan2(dy, dx);
+  context.moveTo(fromx, fromy);
+  context.lineTo(tox, toy);
+  context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+  context.moveTo(tox, toy);
+  context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+}
+  </script>
 </html>

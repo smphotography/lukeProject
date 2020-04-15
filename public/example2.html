@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <canvas id="myCanvas" width="400" height="400"></canvas>
+    <img id="canvasImg" alt="Meme drawn by canvas!">
+  </body>
+  <script type="text/javascript">
+    var canvas = document.getElementById('myCanvas');
+    var context = canvas.getContext('2d');
+    var imageObj = new Image();
+    imageObj.src= 'https://www.resnet.us/wp-content/uploads/HERS_Index_Scale.jpg';
+    var dataURL = canvas.toDataURL("image/png");
+    document.getElementById('canvasImg').src = dataURL;
+    imageObj.onload = function() {
+    context.drawImage(imageObj, 10, 10);
+    context.font = "30px Arial";
+    context.fillText("Hello Meme",25,50);
+
+    };
+  </script>
+</html>

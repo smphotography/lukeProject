@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script type="text/javascript">
+      // window.onload = function() {
+  //    var canvas = document.getElementById("canvas");
+//      var context = canvas.getContext("2d");
+  //    context.fillStyle = "green";
+//      context.fillRect(50, 50, 100, 100);
+      // no argument defaults to image/png; image/jpeg, etc also work on some
+      // implementations -- image/png is the only one that must be supported per spec.
+//      window.location = canvas.toDataURL("image/png");
+//  }
+  var cnvs = document.getElementById('cnvs'),
+    ctx = cnvs.getContext('2d'),
+    mirror = document.getElementById('mirror');
+
+    var imageObj = new Image();
+    imageObj.src= 'https://www.resnet.us/wp-content/uploads/HERS_Index_Scale.jpg';
+        ctx.drawImage(imageObj, 10, 10);
+cnvs.width = mirror.width = window.innerWidth;
+cnvs.height = mirror.height = window.innerHeight;
+  cnvs.drawImage(imageObj, 10, 10);
+mirror.addEventListener('contextmenu', function (e) {
+    var dataURL = canvas.toDataURL('image/png');
+    mirror.src = dataURL;
+});
+var button = document.getElementById('btn-download');
+button.addEventListener('click', function (e) {
+    var dataURL = canvas.toDataURL('image/png');
+    button.href = dataURL;
+});
+    </script>
+  </head>
+  <body>
+<a href="#" class="button" id="btn-download" download="my-file-name.png">Download</a>
+    <div class="canvas__container">
+      <canvas id="cnvs" class="canvas__canvas"></canvas>
+      <img src="" id="mirror" class="canvas__mirror" />
+    </div>
+  </body>
+  <style media="screen">
+    .canvas__container {
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+.canvas__canvas {
+  height: 100%;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+.canvas__mirror {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+  </style>
+</html>
